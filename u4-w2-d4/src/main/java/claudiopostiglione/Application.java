@@ -17,19 +17,19 @@ public class Application {
         Scanner scanner = new Scanner(System.in);
 
         //1
-        Supplier<Product> supplierProduct = () -> {
+        Supplier<List<Product>> supplierProduct = () -> {
             Faker faker = new Faker();
             Random rdmNumber = new Random();
+            List<Product> productList = new ArrayList<>();
+            for(int i = 0; i < 5 ; i++){
             Long idProductRandom = rdmNumber.nextLong(0, 10000);
-            Double priceRandaom = (double) (Math.round(rdmNumber.nextDouble(0, 200.00) * 100) / 100);
-
-            return new Product(idProductRandom, faker.book().title(), faker.book().genre(), priceRandaom);
+            Double priceRandom = (double) (Math.round(rdmNumber.nextDouble(0, 50.00) * 100) / 100);
+                productList.add( new Product(idProductRandom, faker.book().title(), faker.book().genre(), priceRandom));
+            }
+            return  productList;
         };
 
-        List<Product> listProduct = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            listProduct.add(supplierProduct.get());
-        }
+        List<Product> listProduct = supplierProduct.get();
 
         Supplier<Customer> supplierCustomer = () -> {
             Faker faker = new Faker();
@@ -49,10 +49,11 @@ public class Application {
             Random rdmNumber = new Random();
             Long idRandom = rdmNumber.nextLong(0, 10000);
             Customer customer = supplierCustomer.get();
+            List<Product> products = supplierProduct.get();
             LocalDate orderDate = LocalDate.of(2025, 5, 26);
             LocalDate deliveryDate = LocalDate.of(2025, 5, 29);
 
-            return new Order(idRandom, "in consegna", orderDate, deliveryDate, listProduct, customer);
+            return new Order(idRandom, "in consegna", orderDate, deliveryDate, products, customer);
         };
 
         List<Order> listOrder = new ArrayList<>();
@@ -148,7 +149,7 @@ public class Application {
     //1.5
     public static void productsByCategory(List<Product> products){
         Map<String, Double> totalByCategorys= products.stream().collect(Collectors.groupingBy(product -> product.getCategory(), Collectors.summingDouble(product -> product.getPrice())));
-        System.out.println("Somma degli importi per ogni categoria");
+        System.out.println("| Somma degli importi per ogni categoria");
         totalByCategorys.forEach((categoria,totale) -> System.out.println("| - Categoria: " + categoria + " / Totale: " + totale));
     }
 
