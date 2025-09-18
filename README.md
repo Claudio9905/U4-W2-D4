@@ -1,2 +1,1 @@
-# U4-W2-D4
-
+Esercizi sull'uso della Stream in Java (Collectors, Comparators, Limit, Map To)
