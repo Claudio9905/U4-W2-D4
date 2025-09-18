@@ -69,8 +69,9 @@ public class Application {
 
         int scelta;
 
-        do {
             System.out.println("\n");
+        do {
+            System.out.println("|-----------------------------|");
             System.out.println("|-----------------------|");
             System.out.println("| Richieste disponibili |");
             System.out.println("| (0) - Exit ");
@@ -95,6 +96,9 @@ public class Application {
                     break;
                 case 4:
                     avaregePrices(listOrder);
+                    break;
+                case 5:
+                    productsByCategory(listProduct);
                     break;
                 default:
                     System.out.println("Attenzione, scelta inserita errata, prego riprovare..");
@@ -124,7 +128,7 @@ public class Application {
 
     //1.3
     public static void expensiveProducts(List<Product> products){
-        List<Product> expensiveProduct = products.stream().sorted(Comparator.comparingDouble(product -> product.getPrice())).limit(3).toList();
+        List<Product> expensiveProduct = products.stream().sorted(Comparator.comparing(Product::getPrice).reversed()).limit(3).toList();
         System.out.println("| - I prodotti più costosi:");
         expensiveProduct.forEach(product -> System.out.println(product));
     }
@@ -134,11 +138,18 @@ public class Application {
         OptionalDouble avaregePrice = orders.stream().mapToDouble(order -> order.getProducts().stream().mapToDouble(Product::getPrice).sum()).average();
 
         if (avaregePrice.isPresent()){
-            System.out.println("| - La media degli importi degli ordini è: " + avaregePrice);
+            System.out.println("| - La media degli importi degli ordini è: € " + avaregePrice);
         } else {
             System.out.println("| - Errore, impossibile calcolare la media per mancaza di importi");
         }
 
+    }
+
+    //1.5
+    public static void productsByCategory(List<Product> products){
+        Map<String, Double> totalByCategorys= products.stream().collect(Collectors.groupingBy(product -> product.getCategory(), Collectors.summingDouble(product -> product.getPrice())));
+        System.out.println("Somma degli importi per ogni categoria");
+        totalByCategorys.forEach((categoria,totale) -> System.out.println("| - Categoria: " + categoria + " / Totale: " + totale));
     }
 
 }
